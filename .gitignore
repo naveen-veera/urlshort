@@ -1,0 +1,63 @@
+# Gradle
+.gradle/
+build/
+.gradletasknamecache
+
+# Maven
+target/
+log/
+
+# Misc
+*.log
+*.lock
+
+*.numbers
+
+# Eclipse
+.classpath
+.project
+.springBeans
+.settings/
+.metadata/
+bin/
+Servers/
+
+# GWT
+gwt-unitCache-*
+
+# Mac OSX
+.DS_Store
+
+# IntelliJIDEA
+.idea/
+*.iml
+
+# Grunt SASS etc.
+.sass-cache/
+node_modules/
+rebel.xml
+rebel-remote.xml
+*.css.map
+
+#
+#Getting rid of the embedded repositories because some systems/developer
+#have problems.
+#
+cover-legacy/src/main/resources/db/nz/cover-legacy-nz
+
+
+
+
+# Migrator checkpoint files
+cover-legacy/*.json
+# I need these because Jenkins doesn't build them so we won't get them in compiled JARs
+# Let's use .gitattributes to specify that these files shouldn't be merged (like binary ones)
+# so that we'll always just end up with the last updated version.
+#www-1cover-nz/src/main/resources/public/components
+#www-1cover-nz/src/main/resources/public/css
+#www-kangocover-au/src/main/resources/public/css
+#www-travelinsurance-nz/src/main/resources/public/components/js/chat.js
+#www-travelinsurance-nz/src/main/resources/public/components/js/interactor.js
+out
+
+*.hprof

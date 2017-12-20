@@ -1,0 +1,27 @@
+db:
+  host: localhost
+  name: urlshort
+  password: urshort
+  username: urlshort
+  ssl:
+
+spring:
+  resources:
+    cache-period: 0
+  thymeleaf:
+    cache: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${db.host}:5432/${db.name}${db.ssl}
+    username: ${db.username}
+    password: ${db.password}
+    tomcat:      #https://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html#Common_Attributes
+      initialSize: 2
+      maxActive: 10
+      maxIdle: 5
+      minIdle: 1
+      testOnBorrow: true
+      validationQuery: "SELECT 1"
+      validationInterval: 30000
+      removeAbandoned: true #Experimenting - set to false or increase timeout if causes problems
+      removeAbandonedTimeout: 180 #In seconds - but that may be too much
