@@ -3,7 +3,6 @@ package net.orfdev;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,10 +16,12 @@ public class UrlMappingsController {
 	@Autowired
 	private UrlShortDatabase shortUrlDb;
 
-    
-    
-    
- 	
+	@RequestMapping("/")
+	public String hello(@RequestParam(defaultValue="World") String who, Model model) {
+		model.addAttribute("who", who);
+		return "hello";
+	}
+	
     //Take URL as param shorten url
     @RequestMapping("/shorten") // defines the URL to access this method
     @ResponseBody
@@ -36,7 +37,6 @@ public class UrlMappingsController {
     		String base62Number = Base62.encode(random);
     		shortUrlDb.insert(base62Number, longUrl);
     		
-    	
         return "http://localhost:8080/" + base62Number; // resolves to the HTML template at src/main/resources/templates/greeting.html
     }
     
@@ -54,10 +54,5 @@ public class UrlMappingsController {
     }
     
     // You can add more mappings and methods here!
-    
-    
-    
-    
-    
     
 }

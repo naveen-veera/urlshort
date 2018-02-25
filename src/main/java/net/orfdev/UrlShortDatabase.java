@@ -15,11 +15,10 @@ public class UrlShortDatabase {
 	
 	@PostConstruct
 	public void constructDB(){
-		jdbctemplate.execute("CREATE TABLE If Not Exists urls (short_url text Primary Key, long_url text);");
+		jdbctemplate.execute("CREATE TABLE If Not Exists urls (short_url varchar(32) Primary Key, long_url varchar(256));");
 	}
 	
-	public void insert(String base62Number, String longUrl) {
-		
+	public void insert(String base62Number, String longUrl) {	
 		jdbctemplate.update("Insert Into urls (short_url , long_url) Values (?,?)", base62Number, longUrl);
 	}
 

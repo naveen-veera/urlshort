@@ -7,6 +7,17 @@ buildscript {
     }
 }
 
+ext {
+    environment = project.hasProperty('e') ? e : 'dev'
+    profiles = environment
+
+    applicationDefaultJvmArgs = ['-Dspring.profiles.active=' + profiles ] // hack to enable spring profiles
+
+    if(project.hasProperty('debug')) {
+        applicationDefaultJvmArgs << '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000' // enable debugger (wait for connection on startup)
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -30,6 +41,7 @@ targetCompatibility = 1.8
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    compile "org.springframework.boot:spring-boot-starter-log4j2"
     // compile("org.springframework.boot:spring-boot-devtools")
     testCompile("junit:junit")
     //Spring jdbc, transactions and tomcat pool
@@ -37,8 +49,15 @@ dependencies {
     compile 'org.springframework:spring-jdbc'
     compile 'javax.transaction:javax.transaction-api'
     compile 'org.postgresql:postgresql'
+    compile 'org.hsqldb:hsqldb'
 }
 
+configurations {
+    all*.exclude group: 'org.slf4j', module: 'slf4j-simple' // get rid of slf4j
+    all*.exclude group: 'ch.qos.logback', module: 'logback-classic' // get rid of logback-classic as it's greedy
+    all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging' // exclude when using log4j
+}
+    
 task wrapper(type: Wrapper) {
     gradleVersion = '4.0'
 }
