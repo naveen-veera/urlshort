@@ -1,6 +1,14 @@
 # URL shortening application
 
+## Configuration 
+
 See `src/main/resources/application.yml` for configuration options
+
+## Running
+
+Use the gradle wrapper to run the application using the Spring Boot Gradle 
+Plugin. The following commands assume a *nix environment but if running on 
+Windows then use `gradlew.bat` instead.
 
 Running with HSQL database:
 
