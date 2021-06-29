@@ -1,8 +1,8 @@
 package net.orfdev;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class Base62Test {
 
@@ -27,6 +27,24 @@ public class Base62Test {
 		
 		String str = "6JaY2";
 		assertEquals(99424938, Base62.decode(str));
+	}
+	
+	@Test
+	public void testBase62EncodingBounds() {
+		
+		int cMinChars = -1;
+		int cMaxChars = -1;
+		
+		for(long val = 1; val > 0 && val < Long.MAX_VALUE; val = val * 62) {
+			
+			int cChars = Base62.encode(val).length();
+			
+			cMinChars = Math.min(cMinChars == -1 ? cChars : cMinChars, cChars);
+			cMaxChars = Math.max(cMaxChars == -1 ? cChars : cMaxChars, cChars);
+		}
+		
+		assertEquals(1, cMinChars);
+		assertEquals(11, cMaxChars);
 	}
 
 }

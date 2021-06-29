@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.4.4")
     }
 }
 
@@ -33,31 +33,30 @@ repositories {
 }
 
 bootRun {
-    addResources(true)
+	sourceResources sourceSets.main // This line is needed to enable live resources reloading.
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-    compile "org.springframework.boot:spring-boot-starter-log4j2"
-    // compile("org.springframework.boot:spring-boot-devtools")
-    testCompile("junit:junit")
+	compile "org.springframework.boot:spring-boot-starter-web:2.4.4"
+    compile "org.springframework.boot:spring-boot-starter-thymeleaf:2.4.4"
+    compile "org.springframework.boot:spring-boot-starter-log4j2:2.4.4"
     //Spring jdbc, transactions and tomcat pool
-    compile 'org.apache.tomcat:tomcat-jdbc'
-    compile 'org.springframework:spring-jdbc'
-    compile 'javax.transaction:javax.transaction-api'
-    compile 'org.postgresql:postgresql'
-    compile 'org.hsqldb:hsqldb'
+    compile 'org.apache.tomcat:tomcat-jdbc:9.0.16'
+    compile 'org.springframework:spring-jdbc:5.3.5'
+    compile 'javax.transaction:javax.transaction-api:1.2'
+    compile 'org.postgresql:postgresql:42.2.19'
+    compile 'org.hsqldb:hsqldb:2.4.1'
+    
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+    testCompile 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
+    testCompile 'org.junit.platform:junit-platform-launcher:1.7.1'
 }
 
 configurations {
     all*.exclude group: 'org.slf4j', module: 'slf4j-simple' // get rid of slf4j
     all*.exclude group: 'ch.qos.logback', module: 'logback-classic' // get rid of logback-classic as it's greedy
     all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging' // exclude when using log4j
-}
-    
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.3'
 }

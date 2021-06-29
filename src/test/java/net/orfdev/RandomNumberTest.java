@@ -1,10 +1,10 @@
 package net.orfdev;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RandomNumberTest {
 
@@ -20,7 +20,7 @@ public class RandomNumberTest {
 		}
 			
 		// test whether the min and max are bounds are sufficient
-		System.out.println("Min: " + min + " Max:" + max);
+		// System.out.println("Min: " + min + " Max:" + max);
 		assertTrue(min < Long.MIN_VALUE - (Long.MIN_VALUE / 4));
 		assertTrue(max > Long.MAX_VALUE - (Long.MAX_VALUE / 4));
 	}
