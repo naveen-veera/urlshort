@@ -4,7 +4,9 @@ spring:
 
 ---
 spring:
-  profiles: psql
+  config:
+    activate:
+      on-profile:: psql
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/urlshort
@@ -23,7 +25,9 @@ spring:
 
 ---
 spring:
-  profiles: hsql
+  config:
+    activate:
+      on-profile:: hsql
   datasource:
     url: jdbc:hsqldb:file:interview
     username: SA
