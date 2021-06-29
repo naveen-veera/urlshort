@@ -85,7 +85,7 @@ public class UrlMappingsController {
 	// Shorten a URL and then return a JSON payload
 	@RequestMapping("/json/shorten")
 	public @ResponseBody Map<String, String> shortenUrlAndReturnJson(@RequestParam(value="url", required=true) String longUrl, Model model) {
-
+		
 		String shortUrl = shortenUrl(longUrl);
 		
 		Map<String, String> payload = new HashMap<>();
@@ -113,7 +113,7 @@ public class UrlMappingsController {
 	@RequestMapping("/{shortUrl}")
 	public String mapUrl(@PathVariable(value="shortUrl") String shortUrl, Model model) {
 		
-		String longUrl = shortUrlDb.lookup(shortUrl);
+		String longUrl = shortUrlDb.lookupByShortUrl(shortUrl);
 		
 		if(longUrl == null){
 			log.debug("Short url code [{}] not found in DB so returning no content", shortUrl);
