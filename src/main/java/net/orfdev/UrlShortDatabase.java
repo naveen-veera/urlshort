@@ -36,5 +36,19 @@ public class UrlShortDatabase {
 		}
 		return results.get(0);
 	}
-	
+
+	// To Handle Handle duplicate URLs
+	public String handleDuplicate(String longUrl) {
+		List<String> result = jdbctemplate.queryForList("SELECT short_url FROM urls WHERE long_url = ?", String.class, longUrl);
+		if(result.isEmpty()){
+			return null;
+		}
+		return result.get(0);
+	}
+
+	//Health - return the number of records in urls table.
+	public int numberOfRecords() {
+		int count = jdbctemplate.queryForObject("SELECT COUNT(short_url) FROM urls", Integer.class);
+		return count;
+	}
 }

@@ -1,6 +1,6 @@
 package net.orfdev;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.net.*;
+import java.sql.SQLException;
+
 @Controller
 public class UrlMappingsController {
-	
 	private static final Logger log = LogManager.getLogger();
 	
 	@Autowired
@@ -69,19 +71,35 @@ public class UrlMappingsController {
 	// Here is where you may need to add/remove/change code in order to complete the coding task. 
 	// --------------------------------------------------------------------------------------------------------------------- //
 	
-	// Shorten a URL and then show an HTML page
-	@RequestMapping("/html/shorten")
-	public String shortenUrlAndReturnHtml(@RequestParam(value="url", required=true) String longUrl, Model model) {
-
-		String shortUrl = shortenUrl(longUrl);
-		
-		model.addAttribute("originalUrl", longUrl);
-		model.addAttribute("shortUrl", "http://localhost:8080/" + shortUrl);
-		
-		return "shortened";
+	@RequestMapping("/errors") 
+	public String Error( @RequestParam(defaultValue="err") String err,  Model model ) { // To display the Error
+		model.addAttribute("err", err);
+		return "Error"; 
 	}
-	
-	
+
+
+		// Shorten a URL and then show an HTML page
+	@RequestMapping("/html/shorten")
+	public String shortenUrlAndReturnHtml(@RequestParam(value="url", required=true) String longUrl, Model model) throws MalformedURLException,IOException{
+
+		if(isValidUrl(longUrl)){ 	// TO check URL is Valid or Invalid
+			
+			if(longUrl.length() <= 256){ 	// TO chck the maximum character
+				String shortUrl = handleDuplicateURL(longUrl); 	// TO check the short uel is already in DB
+				model.addAttribute("originalUrl", longUrl);
+				model.addAttribute("shortUrl", "http://localhost:8080/" + shortUrl);
+				return "shortened";
+			}
+			else{
+				return	"redirect:/errors?err=Maximum of 256 characters allowed in URL.";
+			}
+
+		}else{
+			return "redirect:/errors?err=Invalid Url";
+		}
+
+	}
+
 	// Shorten a URL and then return a JSON payload
 	@RequestMapping("/json/shorten")
 	public @ResponseBody Map<String, String> shortenUrlAndReturnJson(@RequestParam(value="url", required=true) String longUrl, Model model) {
@@ -95,26 +113,11 @@ public class UrlMappingsController {
 		return payload;
 	}
 
-	
-	private String shortenUrl(String longUrl) {
-		
-		Random randomNumber = new Random();
-		long random = randomNumber.nextLong();
-		if(random < 0) {
-			random = random * -1;
-		}
-		String shortUrl = Base62.encode(random);
-		shortUrlDb.insert(shortUrl, longUrl);
-		
-		return shortUrl;
-	}
-	
-	
 	@RequestMapping("/{shortUrl}")
 	public String mapUrl(@PathVariable(value="shortUrl") String shortUrl, Model model) {
 		
 		String longUrl = shortUrlDb.lookupByShortUrl(shortUrl);
-		
+
 		if(longUrl == null){
 			log.debug("Short url code [{}] not found in DB so returning no content", shortUrl);
 			longUrl = "";
@@ -122,8 +125,74 @@ public class UrlMappingsController {
 		
 		return "redirect:" + longUrl;
 	}
+
+	@RequestMapping("/health")
+	public @ResponseBody Map<String, Integer> healthCheck(){
+		Map<String, Integer> data = new HashMap<>();
+		
+		int count = shortUrlDb.numberOfRecords();
+		data.put("recordCount", count);
+
+		return data;
+	}
+
+
+	
+	private String shortenUrl(String longUrl) {
+		int retry = 15;  //	 Limit the number of retries 15
+		String shortUrl = null;
+		while(retry != 0) {  // Handle duplicate random numbers
+			Random randomNumber = new Random();
+			long random = randomNumber.nextLong();
+			if(random < 0) {
+				random = random * -1;
+			}
+			shortUrl = Base62.encode(random);
+			try {
+				shortUrlDb.insert(shortUrl, longUrl);
+				break;
+			}catch (Exception e) {
+				retry-=1; // retry = retry-1
+				if(retry == 1){
+					log.fatal("Limit Exceeds. Try after sometime or another URL");
+					throw e;
+					
+				}
+			}
+		}
+		return shortUrl;
+	}
 	
 	
-	// You can add more methods here if you need to!
+	// Function to check the URL is Valid or Not.
+	public boolean isValidUrl(String url) throws MalformedURLException, IOException{
+		URL uri = new URL(url);
+		try{
+			HttpURLConnection huc = (HttpURLConnection) uri.openConnection();
+			int responseCode = huc.getResponseCode();
+			System.out.println(responseCode);
+			if(responseCode == 200){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}catch(Exception e){
+			return false;
+		}
+		
+	}
 	
+	// Function to handle the Duplicate URL
+	public String handleDuplicateURL(String longUrl){
+		String shortUrl;
+		String result = shortUrlDb.handleDuplicate(longUrl);
+		
+		if(result == null){
+			shortUrl = shortenUrl(longUrl);
+		}else{
+			shortUrl = result;
+		}
+		return shortUrl;
+	}
 }

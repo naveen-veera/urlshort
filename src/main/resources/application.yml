@@ -1,7 +1,6 @@
 spring:
   thymeleaf:
     cache: false
-
 ---
 spring:
   config:
@@ -12,7 +11,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/urlshort
     username: urlshort
     password: urlshort
-    tomcat:      #https://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html#Common_Attributes
+    tomcat: #https://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html#Common_Attributes
       initialSize: 2
       maxActive: 10
       maxIdle: 5
@@ -22,7 +21,6 @@ spring:
       validationInterval: 30000
       removeAbandoned: true
       removeAbandonedTimeout: 180
-
 ---
 spring:
   config:
@@ -31,4 +29,4 @@ spring:
   datasource:
     url: jdbc:hsqldb:file:interview
     username: SA
-    password: 
+    password:
